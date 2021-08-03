@@ -11,7 +11,7 @@ module PNGlitch
     #
     # Instanciate.
     #
-    def initialize io, start_at, data_size, at
+    def initialize io, start_at, data_size, at, &block
       @index = at
       @io = io
       @start_at = start_at
@@ -27,7 +27,7 @@ module PNGlitch
       @filter_codec = { encoder: nil, decoder: nil }
 
       if block_given?
-        @callback = Proc.new
+        @callback = block
       end
     end
 
