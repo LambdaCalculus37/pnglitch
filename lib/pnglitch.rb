@@ -228,11 +228,10 @@ module PNGlitch
     #
     #   PNGlitch.open(infile, limit_of_decompressed_data_size: 1024 ** 3)
     #
-    def open file, options = {}
+    def open file, options = {}, &block
       base = Base.new file, options[:limit_of_decompressed_data_size]
       if block_given?
         begin
-          block = Proc.new
           if block.arity == 0
             base.instance_eval &block
           else
