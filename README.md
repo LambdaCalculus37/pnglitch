@@ -1,7 +1,7 @@
 # PNGlitch
 
-[![Build Status](https://travis-ci.org/ucnv/pnglitch.svg?branch=master)](https://travis-ci.org/ucnv/pnglitch)
-
+[![Gem Version](https://badge.fury.io/rb/pnglitch.svg)](https://badge.fury.io/rb/pnglitch)
+[![Ruby](https://github.com/ucnv/pnglitch/actions/workflows/ruby.yml/badge.svg)](https://github.com/ucnv/pnglitch/actions/workflows/ruby.yml)
 
 PNGlitch is a Ruby library to destroy your PNG images.
 
