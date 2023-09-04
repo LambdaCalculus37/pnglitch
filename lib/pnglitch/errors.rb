@@ -34,4 +34,10 @@ module PNGlitch
     end
   end
 
+  class FilterTypeError < TypeError
+    def initialize filter_type, scanline_no
+      m = filter_type.to_s + ' is not a valid filter type, at scanline no ' + scanline_no.to_s + '.'
+      super m
+    end
+  end
 end
