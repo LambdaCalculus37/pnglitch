@@ -71,15 +71,15 @@ describe PNGlitch do
 
     context 'when decompressed data is unexpected size' do
       it 'should not raise error for too small size' do
-        bomb = infile.dirname.join('ina.png')
+        short = infile.dirname.join('in_short.png')
         expect {
-          png = PNGlitch.open bomb
+          png = PNGlitch.open short
           png.close
         }.to_not raise_error
       end
 
       it 'should raise error for too large size' do
-        bomb = infile.dirname.join('inb.png')
+        bomb = infile.dirname.join('in_over.png')
         expect {
           png = PNGlitch.open bomb
           png.close
@@ -87,7 +87,7 @@ describe PNGlitch do
       end
 
       it 'can avoid the error' do
-        bomb = infile.dirname.join('inb.png')
+        bomb = infile.dirname.join('in_over.png')
         expect {
           png = PNGlitch.open bomb, limit_of_decompressed_data_size: 100 * 1024 ** 2
           png.close
@@ -111,7 +111,7 @@ describe PNGlitch do
         a = PNGlitch.open infile do |p|
           p.interlaced?
         end
-        interlace = infile.dirname.join('inc.png')
+        interlace = infile.dirname.join('in_interlace.png')
         b = PNGlitch.open interlace do |p|
           p.interlaced?
         end
@@ -346,7 +346,7 @@ describe PNGlitch do
 
     context 'with interlaced PNG' do
       it 'should be in range between 0 and 4' do
-        png = PNGlitch.open infile.dirname.join('inc.png')
+        png = PNGlitch.open infile.dirname.join('in_interlace.png')
         types = png.filter_types
         png.close
         types.each do |t|
@@ -587,7 +587,7 @@ describe PNGlitch do
 
     context 'with an interlaced image' do
       it 'can recognize correct filter types' do
-        img = infile.dirname.join('inc.png')
+        img = infile.dirname.join('in_interlace.png')
         PNGlitch.open img do |p|
           p.each_scanline do |line|
             expect(line.filter_type).to be_between(0, 4)
@@ -604,23 +604,25 @@ describe PNGlitch do
 
   describe '.scanline_at' do
     it 'should reflect the changes to the instance' do
+      posa = 100
+      posb = 95
       PNGlitch.open infile do |png|
-        line = png.scanline_at 100
+        line = png.scanline_at posa
         f = line.filter_type
-        line.filter_type = (f + 1) % 5
+        line.filter_type = (f + 2) % 5
         png.output outfile
       end
 
       png1 = PNGlitch.open infile
-      line1_100 = png1.scanline_at(100).data
-      line1_95 = png1.scanline_at(95).data
+      line1_a = png1.scanline_at(posa).data
+      line1_b = png1.scanline_at(posb).data
       png2 = PNGlitch.open outfile
-      line2_100 = png2.scanline_at(100).data
-      line2_95 = png2.scanline_at(95).data
+      line2_a = png2.scanline_at(posa).data
+      line2_b = png2.scanline_at(posb).data
       png1.close
       png2.close
-      expect(line2_100).not_to eq(line1_100)
-      expect(line2_95).to eq(line1_95)
+      expect(line2_a).not_to eq(line1_a)
+      expect(line2_b).to eq(line1_b)
     end
 
     it 'can apply custom filter method' do
