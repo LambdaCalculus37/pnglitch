@@ -353,9 +353,7 @@ describe PNGlitch do
           expect(t).to be_between(0, 4)
         end
       end
-
     end
-
   end
 
   describe '.each_scanline' do
@@ -531,7 +529,7 @@ describe PNGlitch do
         }.not_to raise_error
         expect {
           PNGlitch.open infile do |png|
-            png.filtered_data.pos = png.filtered_data.size * 4 / 5
+            png.filtered_data.pos = png.filtered_data.size / png.height * 96
             chunk = png.filtered_data.read
             png.filtered_data.rewind
             10.times do
@@ -544,6 +542,24 @@ describe PNGlitch do
             png.output outfile
           end
         }.not_to raise_error
+      end
+
+      it 'should raise an error when it drops the filters' do
+        expect {
+          PNGlitch.open infile do |png|
+            png.filtered_data.pos = png.filtered_data.size / png.height * 96.3
+            chunk = png.filtered_data.read
+            png.filtered_data.rewind
+            10.times do
+              png.filtered_data << chunk
+            end
+            png.each_scanline do |line|
+              line.gsub! /\d/, 'x'
+              line.filter_type = rand(4)
+            end
+            png.output outfile
+          end
+        }.to raise_error PNGlitch::FilterTypeError
       end
     end
 
