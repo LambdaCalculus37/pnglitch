@@ -119,6 +119,24 @@ describe PNGlitch do
         expect(b).to be true
       end
     end
+
+    context 'with several bit depths' do
+      it 'should open without errors' do
+        bit16 = infile.dirname.join('in_bitdepth16.png')
+        png = PNGlitch.open bit16
+        types = png.filter_types
+        height = png.height
+        png.close
+        expect(types.size).to eq height
+        
+        mono = infile.dirname.join('in_monochrome.png')
+        png = PNGlitch.open mono
+        types = png.filter_types
+        height = png.height
+        png.close
+        expect(types.size).to eq height
+      end
+    end
   end
 
   describe '.output' do

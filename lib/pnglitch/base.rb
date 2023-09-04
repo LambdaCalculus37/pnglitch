@@ -6,7 +6,7 @@ module PNGlitch
   #
   class Base
 
-    attr_reader :width, :height, :sample_size, :is_compressed_data_modified
+    attr_reader :width, :height, :bit_depth, :sample_size, :is_compressed_data_modified
     attr_accessor :head_data, :tail_data, :compressed_data, :filtered_data, :idat_chunk_size
 
     #
@@ -46,6 +46,7 @@ module PNGlitch
             @width = ihdr[:width]
             @height = ihdr[:height]
             @interlace = ihdr[:interlace_method]
+            @bit_depth = ihdr[:bit_depth]
             @sample_size = {0 => 1, 2 => 3, 3 => 1, 4 => 2, 6 => 4}[ihdr[:color_type]]
             io.pos -= 13
           end
@@ -546,7 +547,8 @@ module PNGlitch
         scanline_pos.pop  # no need to keep last position
       end
       loop do
-        v = scanline_pos.last + (1 + @width * @sample_size)
+        w = (@width * @bit_depth / 8.0).ceil
+        v = scanline_pos.last + 1 + w * @sample_size
         break if v >= amount
         scanline_pos << v
       end
