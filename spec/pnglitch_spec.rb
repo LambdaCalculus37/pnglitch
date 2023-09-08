@@ -699,7 +699,7 @@ describe PNGlitch do
     end
   end
 
-  describe '.width and .height' do
+  describe '.width, .height, or .bit_depth' do
     it 'destroy the dimension of the image' do
       w, h = ()
       out = outfile
@@ -708,11 +708,26 @@ describe PNGlitch do
         h = p.height
         p.width = w - 10
         p.height = h + 10
+        expect(p.width).to equal w - 10
+        expect(p.height).to equal h + 10
         p.output out
       end
       p = PNGlitch.open out
       expect(p.width).to equal w - 10
       expect(p.height).to equal h + 10
+      p.close
+    end
+
+    it 'can set wrong bit depth' do
+      out = outfile
+      PNGlitch.open infile do |p|
+        depth = p.bit_depth
+        expect(depth).to be == 8
+        p.bit_depth = 16
+        p.output out
+      end
+      p = PNGlitch.open out
+      expect(p.bit_depth).to equal 16
       p.close
     end
   end

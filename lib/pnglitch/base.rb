@@ -417,11 +417,12 @@ module PNGlitch
     # Rewrites the width value.
     #
     def width= w
+      @width = w
       @head_data.pos = 8
       while bytes = @head_data.read(8)
         length, type = bytes.unpack 'Na*'
         if type == 'IHDR'
-          @head_data << [w].pack('N')
+          @head_data << [@width].pack('N')
           @head_data.pos -= 4
           data = @head_data.read length
           @head_data << [Zlib.crc32(data, Zlib.crc32(type))].pack('N')
@@ -429,19 +430,20 @@ module PNGlitch
         end
       end
       @head_data.rewind
-      w
+      @width
     end
 
     #
     # Rewrites the height value.
     #
     def height= h
+      @height = h
       @head_data.pos = 8
       while bytes = @head_data.read(8)
         length, type = bytes.unpack 'Na*'
         if type == 'IHDR'
           @head_data.pos += 4
-          @head_data << [h].pack('N')
+          @head_data << [@height].pack('N')
           @head_data.pos -= 8
           data = @head_data.read length
           @head_data << [Zlib.crc32(data, Zlib.crc32(type))].pack('N')
@@ -450,7 +452,28 @@ module PNGlitch
         end
       end
       @head_data.rewind
-      h
+      @height
+    end
+
+    #
+    # Rewrites the bit depth value.
+    #
+    def bit_depth= d
+      @bit_depth = d
+      @head_data.pos = 8
+      while bytes = @head_data.read(8)
+        length, type = bytes.unpack 'Na*'
+        if type == 'IHDR'
+          @head_data.pos += 8
+          @head_data << [@bit_depth].pack('C')
+          @head_data.pos -= 9
+          data = @head_data.read length
+          @head_data << [Zlib.crc32(data, Zlib.crc32(type))].pack('N')
+          break
+        end
+      end
+      @head_data.rewind
+      @bit_depth
     end
 
     #
