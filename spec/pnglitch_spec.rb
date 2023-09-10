@@ -561,24 +561,6 @@ describe PNGlitch do
           end
         }.not_to raise_error
       end
-
-      it 'should raise an error when it drops the filters' do
-        expect {
-          PNGlitch.open infile do |png|
-            png.filtered_data.pos = png.filtered_data.size / png.height * 96.3
-            chunk = png.filtered_data.read
-            png.filtered_data.rewind
-            10.times do
-              png.filtered_data << chunk
-            end
-            png.each_scanline do |line|
-              line.gsub! /\d/, 'x'
-              line.filter_type = rand(4)
-            end
-            png.output outfile
-          end
-        }.to raise_error PNGlitch::FilterTypeError
-      end
     end
 
     context 'when re-filtering with same filters' do

@@ -124,8 +124,10 @@ module PNGlitch
     def save
       pos = @io.pos
       @io.pos = @start_at
-      filter = Filter.guess(@filter_type)
-      raise FilterTypeError.new(@filter_type, @index) if filter.nil?
+      filter = Filter.guess @filter_type
+      if filter.nil?
+        filter = @filter_type.to_i
+      end
       @io << [filter].pack('C')
       @io << self.data.slice(0, @data_size).ljust(@data_size, "\0")
       @io.pos = pos
